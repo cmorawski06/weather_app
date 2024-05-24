@@ -1,10 +1,12 @@
+import json
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from weather_api.models import UserPreferences
+from weather_api.models import UserPreferences, Location
+from django.views.decorators.http import require_POST
 import requests
 import os
 
@@ -133,6 +135,7 @@ def favorite_locations_api(request):
     # Zwróć listę ulubionych lokalizacji jako odpowiedź JSON
     return JsonResponse({'favorite_locations': favorite_locations_data})
 
+@login_required
 def compare_weather_view(request):
     if request.method == 'POST':
         # Pobierz dane z żądania POST
@@ -145,5 +148,49 @@ def compare_weather_view(request):
         return render(request, 'compare_weather.html', {'location1_temperature': location1_temperature, 'location2_temperature': location2_temperature})
     return render(request, 'compare_weather.html')
 
+@login_required
 def check_weather_view(request):
-    return render(request, 'check_weather.html')
+    return render(request, 'check_weather.html', {'OPENWEATHERMAP_API_KEY': os.getenv('OPENWEATHERMAP_API_KEY')})
+
+def empty_view(request):
+    return redirect('home')
+
+@login_required
+def my_locations_view(request):
+    locations = Location.objects.all()
+    user_locations = UserPreferences.objects.get(user=request.user).preferred_locations
+    user_location_ids = user_locations.values_list('id', flat=True)
+    locations = locations.exclude(id__in=user_location_ids)
+    return render(request, 'my_locations.html', {'user_locations': user_locations if user_locations.exists() else None, 'locations': locations})
+
+@login_required
+@require_POST
+def delete_location_api(request):
+    # Pobierz indeks lokalizacji do usunięcia z ciała zapytania POST
+    data = request.body.decode('utf-8')
+    json_data = json.loads(data)
+    index = json_data['index']
+
+    try:
+        # Usuń lokalizację o podanym indeksie dla zalogowanego użytkownika
+        user_locations = UserPreferences.objects.get(user=request.user).preferred_locations
+        location_to_remove = user_locations.all()[index]
+        user_locations.remove(location_to_remove)
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+    
+@login_required
+@require_POST
+def add_location_api(request):
+    data = request.body.decode('utf-8')
+    json_data = json.loads(data)
+    location_id = json_data['location_id']
+
+    try:
+        user_locations = UserPreferences.objects.get(user=request.user).preferred_locations
+        location_to_add = Location.objects.get(id=location_id)
+        user_locations.add(location_to_add)
+        return JsonResponse({'success': True})
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)

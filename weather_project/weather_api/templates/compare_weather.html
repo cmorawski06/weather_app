@@ -3,7 +3,7 @@
 {% block content %}
 
 <div class="container">
-    <h1 class="mt-4">Porównanie pogody</h1>
+    <h1 class="display-4 mb-4">Porównanie pogody</h1>
     <div class="row mt-4">
         <div class="col">
             <h3>Podaj lokalizację 1</h3>
@@ -45,7 +45,6 @@
         buttonSubmit.addEventListener('click', function() {
             const location1 = location1Input.value; // Pobierz wartość z pola lokalizacji 1
             const location2 = location2Input.value; // Pobierz wartość z pola lokalizacji 2
-            console.log(location1, location2)
             fetchWeather(location1, location1Weather); // Wywołaj funkcję do pobrania danych pogodowych dla lokalizacji 1
             fetchWeather(location2, location2Weather); // Wywołaj funkcję do pobrania danych pogodowych dla lokalizacji 2
         })
@@ -58,6 +57,7 @@
                 .then(data => {
                     // Aktualizuj zawartość diva z pogodą
                     weatherDiv.innerHTML = `
+                        <hr class="mt-2"/>
                         <h3>Pogoda w <strong>${data.location}</strong></h3>
                         <p>Temperatura: ${data.temperature}°C</p>
                         <p>Ciśnienie: ${data.pressure} hPa</p>

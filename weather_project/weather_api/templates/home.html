@@ -27,6 +27,9 @@
         margin-top: 2rem;
         font-size: 1rem;
         text-align: left;
+        border: 2px solid #17a2b8; /* Dodajemy obramowanie o grubości 2px i kolorze niebieskim */
+        padding: 1rem; /* Dodajemy odstęp wewnątrz obramowania */
+        border-radius: 1rem; /* Zaokrąglamy rogi obramowania */
     }
     #favoriteLocations {
         padding: 20px;
@@ -63,7 +66,7 @@
         <div class="container">
             <div class="jumbotron">
                 <h1 class="display-4">Witaj w naszej aplikacji pogodowej!</h1>
-                <p class="lead">Nasza aplikacja oferuje najnowsze informacje pogodowe dla Twojej lokalizacji.</p>
+                <p class="lead mt-5">Nasza aplikacja oferuje najnowsze informacje pogodowe dla Twojej lokalizacji.</p>
                 <hr class="my-4">
                 <p>Proszę zalogować się, aby korzystać z pełnej funkcjonalności.</p>
                 <p class="lead">
@@ -92,7 +95,6 @@
         fetch('/api/favorite_locations/')
             .then(response => response.json())
             .then(data => {
-                console.log(data.favorite_locations)
                 // Wyświetlenie ulubionych lokalizacji na stronie
                 const favoriteLocationsDiv = document.getElementById('favoriteLocations');
                 data.favorite_locations.forEach(location => {

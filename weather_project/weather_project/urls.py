@@ -19,6 +19,7 @@ from django.urls import path
 from weather_api import views
 
 urlpatterns = [
+    path('', views.empty_view),
     path('admin/', admin.site.urls),
     path('login/', views.login_view, name='login'),  # Widok logowania
     path('logout/', views.logout_view, name='logout'),  # Widok wylogowania
@@ -26,5 +27,9 @@ urlpatterns = [
     path('home/', views.home_view, name='home'),
     path('api/favorite_locations/', views.favorite_locations_api, name='favorite_locations_api'),
     path('api/weather/<str:location>', views.get_weather_api, name='get_weather_api'),
-    path('compare-weather/', views.compare_weather_view, name='compare_weather')
+    path('compare-weather/', views.compare_weather_view, name='compare_weather'),
+    path('check-weather/', views.check_weather_view, name='check_weather'),
+    path('my-locations/', views.my_locations_view, name='my_locations'),
+    path('api/delete-location/', views.delete_location_api, name='delete_location_api'),
+    path('api/add-location/', views.add_location_api, name='add_location_api')
 ]

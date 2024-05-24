@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    label, select {
+        margin-bottom: 10px;
+    }
+</style>
+
+<div class="container">
+    <h1 class="mt-4 mb-4">Moje lokalizacje</h1>
+    {% if user_locations %}
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Nazwa Lokalizacji</th>
+                <th scope="col">Temperatura</th>
+                <th scope="col">Ciśnienie</th>
+                <th scope="col">Wilgotność</th>
+                <th scope="col">Opis</th>
+                <th scope="col">Akcje</th>
+            </tr>
+        </thead>
+        <tbody id="favoriteLocationsTableBody">
+            <!-- Tutaj będą dodawane dynamicznie wiersze tabeli -->
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="7">
+                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModal">
+                        Dodaj lokalizację
+                    </button>
+                </td>
+            </tr>
+        </tfoot>
+    </table>
+    {% else %}
+    <p>Wygląda na to, że nie masz jeszcze ulubionych lokalizacji, dodaj je teraz!</p>
+    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#myModal">
+        Dodaj lokalizację
+    </button>
+    {% endif %}
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="myModalLabel">Wybierz lokalizację</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <!-- Formularz dodawania lokalizacji -->
+          <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+              <label for="location">Wybierz lokalizację:</label>
+              <select id="location" name="location_id" class="form-control">
+                {% for location in locations %}
+                <option value="{{ location.id }}">{{ location.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary" id="addLocationButton">Dodaj</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    function getFavoriteLocations() {
+        fetch('/api/favorite_locations/')
+            .then(response => response.json())
+            .then(data => {
+                // Wygenerowanie tabeli z ulubionymi lokalizacjami
+                const tableBody = document.getElementById('favoriteLocationsTableBody');
+                tableBody.innerHTML = ''; // Wyczyszczenie poprzedniej zawartości tabeli
+
+                data.favorite_locations.forEach((location, index) => {
+                    const row = `
+                        <tr>
+                            <th scope="row">${index + 1}</th>
+                            <td>${location.name}</td>
+                            <td>${location.temperature}°C</td>
+                            <td>${location.pressure} hPa</td>
+                            <td>${location.humidity}%</td>
+                            <td>${location.description}</td>
+                            <td><button class="btn btn-danger btn-sm" onclick="deleteLocation(${index})">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+                                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                                        <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+                                    </svg>
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                    tableBody.innerHTML += row;
+                });
+            })
+            .catch(error => console.error('Błąd podczas pobierania ulubionych lokalizacji:', error));
+    }
+
+    // Wywołanie funkcji po załadowaniu strony
+    window.addEventListener('load', getFavoriteLocations);
+
+    function addLocation() {
+        var selectedLocationId = document.getElementById('location').value;
+        fetch('/api/add-location/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ location_id: selectedLocationId }),
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Wystąpił błąd podczas dodawania lokalizacji.');
+            }
+            // Odświeżenie strony po pomyślnym dodaniu lokalizacji
+            location.reload();
+        })
+        .catch(error => console.error('Błąd podczas dodawania lokalizacji:', error));
+    }
+
+    document.getElementById("addLocationButton").addEventListener("click", addLocation);
+
+    function deleteLocation(index) {
+        const csrftoken = getCookie('csrftoken');
+        fetch('/api/delete-location/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken,
+                // Możesz przekazać dodatkowe nagłówki, jeśli to konieczne
+            },
+            body: JSON.stringify({ index: index }),
+        })
+        .then(response => {
+            console.log(response)
+            if (!response.ok) {
+                throw new Error('Wystąpił błąd podczas usuwania lokalizacji.');
+            }
+            // Usunięcie wiersza tabeli z lokalizacją
+            const tableRow = document.getElementById(`locationRow${index}`);
+            if (tableRow) {
+                tableRow.remove();
+            }
+            location.reload()
+        })
+        .catch(error => console.error('Błąd podczas usuwania lokalizacji:', error));
+    }
+
+    // Funkcja do pobierania wartości CSRF tokena z ciasteczka
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                // Szukanie ciasteczka zawierającego CSRF token
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+</script>
+{% endblock %}

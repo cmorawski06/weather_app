@@ -9,6 +9,10 @@
     {% bootstrap_css %}
     {% bootstrap_javascript %}
     <style>
+        li {
+            padding: 4px;
+            font-size: large;
+        }
         /* Dla kontenera nawigacji */
         .navbar {
             padding: 10px;
@@ -40,6 +44,10 @@
         #logoutBtn {
             margin-left: 10px; /* Margines od lewej strony */
         }
+
+        #loginBtn {
+            margin-left: 10px; /* Margines od lewej strony */
+        }
     
         /* Dla przycisku wyloguj po najechaniu myszką */
         #logoutBtn:hover {
@@ -62,7 +70,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item">
-                    <a class="nav-link" href="/home">Home</a>
+                    <a class="nav-link btn btn-secondary text-white" href="/home">Home</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/about">O nas</a>
@@ -76,9 +84,12 @@
                         Pogoda
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="weatherDropdown">
-                        <li><a class="dropdown-item" href="/weather-check">Sprawdź pogodę</a></li>
+                        <li><a class="dropdown-item" href="/check-weather">Sprawdź pogodę</a></li>
                         <li><a class="dropdown-item" href="/compare-weather">Porównaj pogodę</a></li>
                     </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/my-locations">Moje lokalizacje</a>
                 </li>
             </ul>
             <ul class="navbar-nav ml-auto">
@@ -86,7 +97,7 @@
                     {% if user.is_authenticated %}
                     <button class="btn btn-danger" id="logoutBtn">Wyloguj się</button>
                     {% else %}
-                    <a class="btn btn-primary" id="logoutBtn" href="/login" role="button">Zaloguj się</a>
+                    <a class="btn btn-primary" id="loginBtn" href="/login" role="button">Zaloguj się</a>
                     {% endif %}
                 </li>
             </ul>
