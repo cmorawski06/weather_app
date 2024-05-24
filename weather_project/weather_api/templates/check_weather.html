@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="mt-4">
+    <form id="weatherForm">
+        <div class="form-group">
+            <label for="locationInput">Wprowadź lokalizację:</label>
+            <input type="text" id="locationInput" class="form-control" placeholder="Wprowadź lokalizację">
+        </div>
+        <button type="submit" class="btn btn-primary">Pobierz pogodę</button>
+    </form>
+</div>
+<div id="weatherResult" class="mt-4"></div>
+
+<script>
+    document.getElementById("weatherForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+        var location = document.getElementById("locationInput").value;
+        fetchWeather(location, '6a2f111a7f889e19fc52eef66b927fc4'); // TODO: zmienić z env
+    });
+
+    function fetchWeather(location, apiKey) {
+        fetch(`http://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}&units=metric&lang=pl`)
+            .then(response => response.json())
+            .then(data => {
+                displayWeather(data);
+            })
+            .catch(error => {
+                console.error('Wystąpił błąd:', error);
+            });
+    }
+
+    function displayWeather(data) {
+        var weatherResult = document.getElementById("weatherResult");
+        if (data.cod === 200) {
+            console.log(data)
+            weatherResult.innerHTML = `
+                <h3>Pogoda w ${data.name}</h3>
+                <p>Temperatura: ${data.main.temp}°C</p>
+                <p>Ciśnienie: ${data.main.pressure} hPa</p>
+                <p>Wilgotność: ${data.main.humidity}%</p>
+                <p>Opis: ${data.weather[0].description}</p>
+            `;
+        } else {
+            weatherResult.textContent = 'Nie można pobrać danych o pogodzie dla podanej lokalizacji.';
+        }
+    }
+
+</script>
+{% endblock %}

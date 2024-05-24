@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    body, html {
+        height: 100%;
+    }
+    .container {
+        height: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+    .jumbotron {
+        width: 70%;
+        text-align: center;
+    }
+    .jumbotron h1 {
+        font-size: 3rem;
+    }
+    .jumbotron p {
+        font-size: 1.25rem;
+    }
+    .instructions {
+        margin-top: 2rem;
+        font-size: 1rem;
+        text-align: left;
+    }
+    #favoriteLocations {
+        padding: 20px;
+    }
+    #favoriteLocations h3 {
+        color: #333; /* Ciemnoszary kolor tekstu */
+        font-family: 'Arial', sans-serif; /* Czysta i czytelna czcionka */
+        background-color: #f8f9fa; /* Jasnoszary kolor tła */
+        padding: 10px 15px; /* Padding dookoła tekstu */
+        border-radius: 5px; /* Zaokrąglone rogi */
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtelny cień dla głębi */
+        margin-bottom: 10px; /* Odstęp od elementów poniżej */
+    }
+
+    #favoriteLocations p {
+        color: #555; /* Średnioszary kolor tekstu */
+        font-family: 'Arial', sans-serif;
+        margin-left: 20px; /* Lekkie wcięcie dla lepszej struktury */
+        line-height: 1.5; /* Zwiększona wysokość linii dla lepszej czytelności */
+    }
+</style>
+
+<div>
+    {% if user.is_authenticated %}
+        {% if favorite_locations %}
+                <h1>Pogoda w Twoich ulubionych lokalizacjach:</h1>
+                <div id="favoriteLocations">
+                    <!-- Tutaj będą wyświetlane ulubione lokalizacje -->
+                </div>
+        {% else %}
+        <h1>Nie masz jeszcze żadnych ulubionych lokalizacji.</h1>
+        {% endif %}
+    {% else %}
+        <div class="container">
+            <div class="jumbotron">
+                <h1 class="display-4">Witaj w naszej aplikacji pogodowej!</h1>
+                <p class="lead">Nasza aplikacja oferuje najnowsze informacje pogodowe dla Twojej lokalizacji.</p>
+                <hr class="my-4">
+                <p>Proszę zalogować się, aby korzystać z pełnej funkcjonalności.</p>
+                <p class="lead">
+                    <a class="btn btn-primary btn-lg" href="/login" role="button">Zaloguj się</a>
+                </p>
+                <p>Jeśli nie masz jeszcze konta, <a href="/register">zarejestruj się tutaj</a>.</p>
+            </div>
+            <hr/>
+            <div class="instructions">
+                <h2>Instrukcje:</h2>
+                <ol>
+                    <li>Zaloguj się, aby uzyskać dostęp do personalizowanych danych pogodowych.</li>
+                    <li>Wybierz lokalizację lub dodaj swoje ulubione lokalizacje do monitorowania pogody.</li>
+                    <li>Przeglądaj aktualne warunki pogodowe oraz prognozy na kolejne dni.</li>
+                    <li>Otrzymuj powiadomienia o istotnych zmianach pogodowych w Twojej okolicy.</li>
+                </ol>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+
+<script>
+    // Funkcja do wysyłania żądania API z ulubionymi lokalizacjami
+    function getFavoriteLocations() {
+        fetch('/api/favorite_locations/')
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.favorite_locations)
+                // Wyświetlenie ulubionych lokalizacji na stronie
+                const favoriteLocationsDiv = document.getElementById('favoriteLocations');
+                data.favorite_locations.forEach(location => {
+                    const info = `
+                    <h3>Pogoda w <strong>${location.name}</strong></h3>
+                    <p>Temperatura: ${location.temperature}°C</p>
+                    <p>Ciśnienie: ${location.pressure} hPa</p>
+                    <p>Wilgotność: ${location.humidity}%</p>
+                    <p>Opis: ${location.description}</p>
+                    `
+                    favoriteLocationsDiv.innerHTML += info;
+                });
+            })
+            .catch(error => console.error('Błąd podczas pobierania ulubionych lokalizacji:', error));
+    }
+
+    // Wywołanie funkcji po załadowaniu strony
+    window.addEventListener('load', getFavoriteLocations);
+</script>
+
+{% endblock %}

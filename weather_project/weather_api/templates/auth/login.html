@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    body {
+        background-image: url('https://static.vecteezy.com/system/resources/thumbnails/038/563/344/small/ai-generated-the-sky-was-dark-with-pouring-rain-accompanied-by-nimbostratus-clouds-that-covered-the-entire-sky-photo.jpg'); /* Zastąp 'https://example.com/background-image.jpg' adresem obrazu z internetu */
+        background-size: cover;
+        background-position: center;
+        overflow: hidden; /* Zapobiega wyświetlaniu tła formularza poza obszarem okna przeglądarki */
+    }
+    .login-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('https://static.vecteezy.com/system/resources/thumbnails/038/563/344/small/ai-generated-the-sky-was-dark-with-pouring-rain-accompanied-by-nimbostratus-clouds-that-covered-the-entire-sky-photo.jpg'); /* Zastąp 'https://example.com/background-image.jpg' adresem obrazu z internetu */
+        background-size: cover;
+        background-position: center;
+        filter: blur(10px); /* Dodajemy efekt rozmycia */
+        z-index: -1; /* Ustawiamy niższą warstwę, aby tło nie zasłaniało formularza */
+    }
+    .login-container {
+        max-width: 300px;
+        margin: auto;
+        padding: 20px; /* Dodajemy padding */
+        border-radius: 10px;
+        border: 1px solid #ced4da; /* Dodajemy ramkę */
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        background-color: rgba(255, 255, 255, 0.9); /* Dodajemy lekkie tło */
+        position: relative; /* Ustawiamy pozycję względem body */
+        z-index: 1; /* Ustawiamy wyższą warstwę, aby formularz był na wierzchu */
+    }
+    .login-heading {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    .form-group {
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+
+    .form-control {
+        margin-top: 5px;
+    }
+
+    .create-account-label {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .create-account-label a {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    .create-account-label {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .create-account-label p {
+        margin-bottom: 0;
+        font-size: 14px;
+    }
+
+    .create-account-label a {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    .input-group-text {
+        font-size: 1rem; /* Domyślny rozmiar czcionki */
+        line-height: 1.5; /* Wysokość wiersza */
+        padding: 0.375rem 0.75rem; /* Wewnętrzny padding */
+        margin-bottom: 0; /* Resetuj margines dolny */
+        font-weight: 400; /* Grubość czcionki */
+        color: #495057; /* Kolor tekstu */
+        text-align: center; /* Wyrównanie tekstu */
+        white-space: nowrap; /* Zapobiegaj zawijaniu tekstu */
+        background-color: #e9ecef; /* Kolor tła */
+        border: 1px solid #ced4da; /* Obramowanie */
+        border-radius: 0.25rem; /* Promień zaokrąglenia */
+        height: calc(1.5em + 0.75rem + 2px); /* Dopasowana wysokość do pola input */
+        margin-top: 5px;
+    }
+</style>
+
+<div class="container">
+    <div class="login-container">
+        <h2 class="login-heading">Zaloguj się na konto</h2>
+        <form method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_username">Login</label>
+                <div class="input-group has-validation">
+                    <span class="input-group-text" id="inputGroupPrepend">@</span>
+                    <input type="text" name="username" class="form-control" id="validationCustomUsername" aria-describedby="inputGroupPrepend" required placeholder="Wprowadź Login">
+                    <div class="invalid-feedback">
+                        Proszę wprowadzić login.
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="id_password">Hasło</label>
+                <input type="password" name="password" class="form-control" id="id_password"
+                    placeholder="••••••••" required>
+                <div class="invalid-feedback">
+                    Proszę podać hasło.
+                </div>
+            </div>
+            <div class="form-group d-none" id="error-message">
+                <div class="alert alert-danger" role="alert">
+                    <strong>Błąd</strong>: Niepoprawny login lub hasło.
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Zaloguj</button>
+            <div class="create-account-label">
+                <p>Nie masz jeszcze konta? <a href="{% url 'register' %}">Zarejestruj się tutaj</a>!</p>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            var validation = Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        document.getElementById('error-message').classList.add('d-none');
+                    } else {
+                        event.preventDefault(); // Prevent default form submission
+                        
+                        var formData = new FormData(form);
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('POST', form.action, true);
+                        xhr.setRequestHeader('X-CSRFToken', formData.get('csrfmiddlewaretoken'));
+                        xhr.onreadystatechange = function() {
+                            if (xhr.readyState === 4 && xhr.status === 200) {
+                                if (xhr.responseText.includes('Niepoprawny login lub hasło')) {
+                                    document.getElementById('error-message').classList.remove('d-none');
+                                } else {
+                                    window.location.href = '/home';
+                                }
+                            }
+                        };
+                        xhr.send(formData);
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
+{% endblock %}

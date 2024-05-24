@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container">
+    <h1 class="mt-4">Porównanie pogody</h1>
+    <div class="row mt-4">
+        <div class="col">
+            <h3>Podaj lokalizację 1</h3>
+            <form id="location1Form">
+                <div class="form-group">
+                    <input type="text" class="form-control" id="location1Input" placeholder="Wprowadź lokalizację...">
+                </div>
+            </form>
+            <div id="location1Weather" class="mt-4">
+                <!-- Tutaj będzie wyświetlany opis pogody dla lokalizacji 1 -->
+            </div>
+        </div>
+        <div class="col">
+            <h3>Podaj lokalizację 2</h3>
+            <form id="location2Form">
+                <div class="form-group">
+                    <input type="text" class="form-control" id="location2Input" placeholder="Wprowadź lokalizację...">
+                </div>
+            </form>
+            <div id="location2Weather" class="mt-4">
+                <!-- Tutaj będzie wyświetlany opis pogody dla lokalizacji 2 -->
+            </div>
+        </div>
+    </div>
+    <div class="mt-4">
+        <button class="btn btn-primary" id="button-submit"">Sprawdź</button>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Pobierz elementy formularzy i miejsca, gdzie wyświetlimy dane pogodowe
+        const buttonSubmit = document.getElementById('button-submit');
+        const location1Input = document.getElementById('location1Input');
+        const location2Input = document.getElementById('location2Input');
+        const location1Weather = document.getElementById('location1Weather');
+        const location2Weather = document.getElementById('location2Weather');
+
+        buttonSubmit.addEventListener('click', function() {
+            const location1 = location1Input.value; // Pobierz wartość z pola lokalizacji 1
+            const location2 = location2Input.value; // Pobierz wartość z pola lokalizacji 2
+            console.log(location1, location2)
+            fetchWeather(location1, location1Weather); // Wywołaj funkcję do pobrania danych pogodowych dla lokalizacji 1
+            fetchWeather(location2, location2Weather); // Wywołaj funkcję do pobrania danych pogodowych dla lokalizacji 2
+        })
+
+        // Funkcja do pobierania danych pogodowych z API
+        function fetchWeather(location, weatherDiv) {
+            // Wyślij żądanie GET do API z lokalizacją
+            fetch(`/api/weather/${location}`)
+                .then(response => response.json()) // Parsuj odpowiedź jako JSON
+                .then(data => {
+                    // Aktualizuj zawartość diva z pogodą
+                    weatherDiv.innerHTML = `
+                        <h3>Pogoda w <strong>${data.location}</strong></h3>
+                        <p>Temperatura: ${data.temperature}°C</p>
+                        <p>Ciśnienie: ${data.pressure} hPa</p>
+                        <p>Wilgotność: ${data.humidity}%</p>
+                        <p>Opis: ${data.description}</p>
+                    `;
+                })
+                .catch(error => {
+                    console.error('Błąd podczas pobierania danych pogodowych:', error);
+                    weatherDiv.innerHTML = '<p>Błąd podczas pobierania danych pogodowych</p>';
+                });
+        }
+    });
+</script>
+
+
+{% endblock %}

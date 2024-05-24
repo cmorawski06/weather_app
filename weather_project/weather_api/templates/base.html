@@ -1,0 +1,112 @@
+{% load bootstrap_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Weather App{% endblock %}</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
+    {% bootstrap_javascript %}
+    <style>
+        /* Dla kontenera nawigacji */
+        .navbar {
+            padding: 10px;
+            background-color: #343a40; /* Kolor tła */
+        }
+    
+        /* Dla marki (brand) */
+        .navbar-brand {
+            font-weight: bold; /* Pogrubienie tekstu */
+            color: #ffffff; /* Kolor tekstu */
+        }
+    
+        /* Dla odnośników w nawigacji */
+        .navbar-nav .nav-link {
+            color: #ffffff; /* Kolor tekstu */
+        }
+    
+        /* Dla aktywnego odnośnika */
+        .navbar-nav .nav-link.active {
+            color: #ffc107; /* Kolor tekstu dla aktywnego odnośnika */
+        }
+    
+        /* Dla odnośników w nawigacji po najechaniu myszką */
+        .navbar-nav .nav-link:hover {
+            color: #ffc107; /* Kolor tekstu po najechaniu myszką */
+        }
+    
+        /* Dla przycisku wyloguj */
+        #logoutBtn {
+            margin-left: 10px; /* Margines od lewej strony */
+        }
+    
+        /* Dla przycisku wyloguj po najechaniu myszką */
+        #logoutBtn:hover {
+            background-color: #dc3545; /* Kolor tła po najechaniu myszką */
+            border-color: #dc3545; /* Kolor obramowania po najechaniu myszką */
+        }
+    </style>
+</head>
+<body>
+    <header>
+    </header>
+    <!-- Navbar -->
+    {% if not navbar %}
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="/home">Weather App</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/home">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/about">O nas</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/contact">Kontakt</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="weatherDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Pogoda
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="weatherDropdown">
+                        <li><a class="dropdown-item" href="/weather-check">Sprawdź pogodę</a></li>
+                        <li><a class="dropdown-item" href="/compare-weather">Porównaj pogodę</a></li>
+                    </ul>
+                </li>
+            </ul>
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    {% if user.is_authenticated %}
+                    <button class="btn btn-danger" id="logoutBtn">Wyloguj się</button>
+                    {% else %}
+                    <a class="btn btn-primary" id="logoutBtn" href="/login" role="button">Zaloguj się</a>
+                    {% endif %}
+                </li>
+            </ul>
+        </div>
+    </nav>    
+    {% endif %}
+    <div class="d-flex flex-column min-vh-100 min-vw-100">
+        <div class="d-flex flex-grow-1 justify-content-center align-items-center">
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+    <footer>
+    </footer>
+</body>
+<script>
+    document.getElementById("logoutBtn").addEventListener("click", function() {
+        if (confirm("Czy na pewno chcesz się wylogować?")) {
+            window.location.href = "{% url 'logout' %}";
+        }
+    });
+</script>
+</html>

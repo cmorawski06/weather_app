@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+<style>
+    body {
+        background-image: url('https://static.vecteezy.com/system/resources/thumbnails/038/563/344/small/ai-generated-the-sky-was-dark-with-pouring-rain-accompanied-by-nimbostratus-clouds-that-covered-the-entire-sky-photo.jpg');
+        background-size: cover;
+        background-position: center;
+        overflow: hidden;
+    }
+
+    .register-background {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url('https://static.vecteezy.com/system/resources/thumbnails/038/563/344/small/ai-generated-the-sky-was-dark-with-pouring-rain-accompanied-by-nimbostratus-clouds-that-covered-the-entire-sky-photo.jpg');
+        background-size: cover;
+        background-position: center;
+        filter: blur(5px);
+        z-index: -1;
+    }
+
+    .register-container {
+        max-width: 500px;
+        margin: auto;
+        padding: 20px;
+        border-radius: 10px;
+        border: 1px solid #ced4da;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        background-color: rgba(255, 255, 255, 0.9);
+        position: relative;
+        z-index: 1;
+    }
+
+    .register-heading {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .row {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .col {
+        flex: 1;
+        padding-right: 10px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-control {
+        margin-top: 5px;
+        max-width: 250px;
+    }
+
+    .create-account-label {
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .create-account-label a {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    .create-account-label p {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 14px;
+    color: #666;
+    }
+
+    .create-account-label a {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .create-account-label a:hover {
+        text-decoration: underline;
+    }
+
+    .required {
+        color: red;
+        font-weight: bold;
+    }
+    .input-group-text {
+        font-size: 1rem; /* Domyślny rozmiar czcionki */
+        line-height: 1.5; /* Wysokość wiersza */
+        padding: 0.375rem 0.75rem; /* Wewnętrzny padding */
+        margin-bottom: 0; /* Resetuj margines dolny */
+        font-weight: 400; /* Grubość czcionki */
+        color: #495057; /* Kolor tekstu */
+        text-align: center; /* Wyrównanie tekstu */
+        white-space: nowrap; /* Zapobiegaj zawijaniu tekstu */
+        background-color: #e9ecef; /* Kolor tła */
+        border: 1px solid #ced4da; /* Obramowanie */
+        border-radius: 0.25rem; /* Promień zaokrąglenia */
+        height: calc(1.5em + 0.75rem + 2px); /* Dopasowana wysokość do pola input */
+        margin-top: 5px;
+    }
+    #validationCustomUsername {
+        max-width: 210px;
+    }
+</style>
+
+<div class="container">
+    <div class="register-container">
+        <h2 class="register-heading">Zarejestruj nowe konto</h2>
+        <form method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
+            <div class="row">
+                <div class="form-group col">
+                    <label for="id_first_name">Imię</label>
+                    <input type="text" name="first_name" class="form-control" id="id_first_name" placeholder="Wprowadź Imię">
+                </div>
+                <div class="form-group col">
+                    <label for="id_last_name">Nazwisko</label>
+                    <input type="text" name="last_name" class="form-control" id="id_last_name" placeholder="Wprowadź Nazwisko">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="validationCustomUsername" class="form-label">Login <span class="required">*</span></label>
+                <div class="input-group has-validation">
+                    <span class="input-group-text" id="inputGroupPrepend">@</span>
+                    <input type="text" name="username" class="form-control" id="validationCustomUsername" aria-describedby="inputGroupPrepend" required placeholder="Wprowadź Login">
+                    <div class="invalid-feedback">
+                        Proszę wprowadzić login.
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="id_email">Adres Email</label>
+                <input type="email" name="email" class="form-control" id="id_email" placeholder="Wprowadź Email">
+            </div>
+            <div class="form-group">
+                <label for="id_password">Hasło <span class="required">*</span></label>
+                <input type="password" name="password" class="form-control" id="id_password" placeholder="••••••••" required>
+                <div class="invalid-feedback">
+                    Proszę wprowadzić hasło.
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Zarejestruj</button>
+            <div class="create-account-label">
+                <p>Masz już konto? <a href="{% url 'login' %}">Zaloguj się</a>.</p>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Przykład walidacji JavaScript z użyciem Bootstrap Validation
+(function() {
+  'use strict';
+  window.addEventListener('load', function() {
+    var forms = document.getElementsByClassName('needs-validation');
+    var validation = Array.prototype.filter.call(forms, function(form) {
+      form.addEventListener('submit', function(event) {
+        if (form.checkValidity() === false) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  }, false);
+})();
+</script>
+
+{% endblock %}
